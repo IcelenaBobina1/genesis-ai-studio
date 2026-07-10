@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Genesis AI Studio - Starter</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 2rem auto; }
+    input, button { padding: .5rem; margin: .25rem 0; }
+    .card { border: 1px solid #ddd; padding: .75rem; margin: .5rem 0; border-radius:6px; }
+  </style>
+</head>
+<body>
+  <h1>Genesis AI Studio - Starter</h1>
+  <div id="auth">
+    <h2>Register</h2>
+    <input id="reg-user" placeholder="username" /><br/>
+    <input id="reg-pass" placeholder="password" type="password" /><br/>
+    <button onclick="register()">Register</button>
+
+    <h2>Login</h2>
+    <input id="log-user" placeholder="username" /><br/>
+    <input id="log-pass" placeholder="password" type="password" /><br/>
+    <button onclick="login()">Login</button>
+
+    <div style="margin-top:.5rem">
+      <button onclick="whoami()">Who am I?</button>
+      <button onclick="logout()">Logout</button>
+      <pre id="whoami"></pre>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div id="uploads" class="card">
+    <h2>Upload Photo</h2>
+    <input type="file" id="file" accept="image/*" />
+    <button onclick="upload()">Upload</button>
+    <div id="images"></div>
+  </div>
+
+  <div id="characters" class="card">
+    <h2>Characters</h2>
+    <input id="char-name" placeholder="character name" />
+    <button onclick="createCharacter()">Create Character</button>
+    <div id="char-list"></div>
+  </div>
+
+<script>
+async function api(path, opts = {}) {
+  const res = await fetch(path, Object.assign({ credentials: 'same-origin' }, opts));
+  return res.json();
+}
+async function register() {
+  const username = document.getElementById('reg-user').value;
+  const password = document.getElementById('reg-pass').value;
+  const r = await api('/api/register', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ username, password })});
+  alert(JSON.stringify(r));
+}
+async function login() {
+  const username = document.getElementById('log-user').value;
+  const password = document.getElementById('log-pass').value;
+  const r = await api('/api/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ username, password })});
+  alert(JSON.stringify(r));
+  await refresh();
+}
+async function logout() {
+  await api('/api/logout', { method: 'POST' });
+  alert('logged out');
+  document.getElementById('whoami').textContent = '';
+}
+async function whoami() {
+  const r = await api('/api/whoami');
+  document.getElementById('whoami').textContent = JSON.stringify(r);
+}
+async function upload() {
+  const f = document.getElementById('file').files[0];
+  if (!f) return alert('choose file');
+  const fd = new FormData();
+  fd.append('image', f);
+  const r = await fetch('/api/upload', { method: 'POST', body: fd, credentials: 'same-origin' });
+  const json = await r.json();
+  alert(JSON.stringify(json));
+  await refreshImages();
+}
+async function refreshImages() {
+  const r = await api('/api/images');
+  const div = document.getElementById('images');
+  div.innerHTML = '';
+  if (r.images && r.images.length) {
+    r.images.forEach(i => {
+      const thumb = `/storage/thumbs/${i.thumb_filename}`;
+      const imgEl = document.createElement('div');
+      imgEl.innerHTML = `<div><img src="${thumb}" width="120" /> <div>Uploaded: ${i.created_at || ''}</div></div>`;
+      div.appendChild(imgEl);
+    });
+  } else {
+    div.textContent = 'No images yet';
+  }
+}
+async function createCharacter() {
+  const name = document.getElementById('char-name').value;
+  const r = await api('/api/characters', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ name })});
+  alert(JSON.stringify(r));
+  await refreshChars();
+}
+async function refreshChars() {
+  const r = await api('/api/characters');
+  const div = document.getElementById('char-list');
+  div.innerHTML = '';
+  if (r.characters && r.characters.length) {
+    r.characters.forEach(c => {
+      const el = document.createElement('div');
+      el.textContent = `${c.id}: ${c.name}`;
+      div.appendChild(el);
+    });
+  } else {
+    div.textContent = 'No characters yet';
+  }
+}
+async function refresh() {
+  await whoami();
+  await refreshImages();
+  await refreshChars();
+}
+refresh();
+</script>
+</body>
+</html>
