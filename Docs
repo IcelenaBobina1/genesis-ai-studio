@@ -1,1 +1,34 @@
-PROJECT.md
+# Genesis AI Studio Roadmap
+
+## Phase 1 - Foundation
+- [ ] User accounts
+- [ ] Dashboard
+- [ ] Upload photos
+- [ ] Character management
+- [ ] Database
+
+## Phase 2 - AI Images
+- [ ] Train character model
+- [ ] Generate images
+- [ ] Save image library
+
+## Phase 3 - AI Voice
+- [ ] Voice cloning (with user permission)
+- [ ] Lip sync
+
+## Phase 4 - AI Video
+- [ ] Generate short videos
+- [ ] Multi-character scenes
+- [ ] Camera controls
+
+## Phase 5 - Movie Studio
+- [ ] Timeline editor
+- [ ] Scene editor
+- [ ] Script generator
+- [ ] Render 20-minute movies
+
+## Phase 6 - Cloud Platform
+- [ ] Billing
+- [ ] Team projects
+- [ ] API
+- [ ] Mobile app
