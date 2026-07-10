@@ -1,0 +1,8 @@
+genesis-ai-studio/
+    apps/
+    ai/
+    packages/
+    database/
+    docker/
+    docs/
+    storage/
